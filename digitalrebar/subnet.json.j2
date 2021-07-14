@@ -1,0 +1,35 @@
+{
+  "Name": "{{ network_interface }}",
+  "Proxy": true,
+  "Enabled": true,
+  "Subnet": "{{ network_cidr }}",
+  "ActiveStart": "{{ network_dhcp_start }}",
+  "ActiveEnd": "{{ network_dhcp_end }}",
+  "Options": [
+    {
+      "Code": 1,
+      "Value": "{{ network_netmask }}"
+    },
+    {
+      "Code": 3,
+      "Value": "{{ network_router }}"
+    },
+    {
+      "Code": 6,
+      "Value": "{{ network_dns }}"
+    },
+    {
+      "Code": 15,
+      "Value": "{{ network_dns_search }}"
+    },
+    {
+      "Code": 28,
+      "Value": "{{ network_broadcast }}"
+    },
+    {
+      "Code": 67,
+      "Value": "tftp://{{ provisioner_fqdn }}/lpxelinux.0"
+    }
+  ],
+  "Strategy": "MAC",
+}

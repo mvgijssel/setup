@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -Eeoux pipefail
+
+KUBEADM_BOOTSTRAP_TOKEN="${kubeadm_bootstrap_token}"
+CONTROL_PLANE_ENDPOINT="${control_plane_endpoint}"
+
+echo "THE JOIN COMMAND!"
+
+# sudo kubeadm reset --force

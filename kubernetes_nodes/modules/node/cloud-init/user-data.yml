@@ -1,0 +1,17 @@
+#cloud-config
+
+manage_etc_hosts: localhost
+
+users:
+  - name: vagrant
+    plain_text_passwd: vagrant
+    lock_passwd: false
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: libvirt
+    ssh_authorized_keys:
+    - ${public_key}
+
+runcmd:
+  # Restart networking only during first boot to fix the wrong hostname in dhcp server
+  - [systemctl, restart, networking]

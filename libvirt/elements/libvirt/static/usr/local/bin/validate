@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -Eeoux pipefail
+
+goss --gossfile /etc/goss/goss.yaml --vars <(facter -j) validate --format documentation --color --retry-timeout 60s --sleep 1s

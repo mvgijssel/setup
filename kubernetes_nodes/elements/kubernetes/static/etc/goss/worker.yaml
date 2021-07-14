@@ -1,0 +1,6 @@
+gossfile:
+  preflight.yaml: {}
+service:
+  kubelet:
+    enabled: true
+    running: true

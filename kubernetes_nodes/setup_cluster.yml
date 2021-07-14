@@ -1,0 +1,96 @@
+---
+- name: Start kubernetes cluster on master_group
+  hosts: master_group
+  gather_facts: yes
+  become_method: sudo
+  tasks:
+    - name: Reset Kubernetes cluster
+      become: yes
+      command: |
+        kubeadm reset --force
+
+    - name: Init Kubernetes cluster
+      become: yes
+      command: |
+        kubeadm init --service-cidr {{ service_cidr }}
+                     --pod-network-cidr {{ pod_network_cidr }}
+                     --control-plane-endpoint {{ control_plane_endpoint }}
+                     --ignore-preflight-errors NumCPU
+
+    - name: Generate Kubernetes join token
+      become: yes
+      register: join_command
+      command: |
+        kubeadm token create --print-join-command
+
+    - name: Create kubectl config directory
+      file:
+        path: "{{ ansible_user_dir }}/.kube"
+        state: directory
+        owner: "{{ ansible_user_uid }}"
+        group: "{{ ansible_user_gid }}"
+
+    - name: Copy kubectl config
+      become: yes
+      copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_user_dir }}/.kube/config"
+        owner: "{{ ansible_user_uid }}"
+        group: "{{ ansible_user_gid }}"
+
+    - name: Copy kubectl config to local machine
+      fetch:
+        src: "{{ ansible_user_dir }}/.kube/config"
+        dest: /tmp/config
+        flat: yes
+
+    - name: Initialize flannel network
+      command: |
+        kubectl apply -f {{ flannel_manifest }}
+
+    - name: "Wait for master_group '{{ ansible_hostname }}' to be ready"
+      environment:
+        # https://kubernetes.io/docs/reference/kubectl/cheatsheet/#viewing-finding-resources
+        JSONPATH: '{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}'
+      command: "kubectl get node {{ ansible_hostname }} -o jsonpath=$JSONPATH"
+      register: kubernetes_master_group_status
+      until:
+        - '"Ready=True" in kubernetes_master_group_status.stdout'
+      retries: 60
+      delay: 2
+
+- name: Join worker group to kubernetes cluster
+  hosts: worker_group
+  gather_facts: yes
+  become_method: sudo
+  tasks:
+    - name: Reset Kubernetes cluster
+      become: yes
+      command: |
+        kubeadm reset --force
+
+    - set_fact:
+        join_command: "{{ master_host['join_command']['stdout'] }}"
+
+    - name: Join Kubernetes cluster
+      become: yes
+      command: |
+        {{ join_command }}
+
+- name: Wait till kubernetes workers are ready
+  hosts: master_group
+  gather_facts: yes
+  become_method: sudo
+  tasks:
+    - name: "Wait for worker group to be ready"
+      environment:
+        # https://kubernetes.io/docs/reference/kubectl/cheatsheet/#viewing-finding-resources
+        JSONPATH: '{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}'
+      command: "kubectl get node {{ hostvars[item]['ansible_hostname'] }} -o jsonpath=$JSONPATH"
+      register: kubernetes_node_status
+      until:
+        - '"Ready=True" in kubernetes_node_status.stdout'
+      retries: 60
+      delay: 2
+      loop: "{{ groups['worker_group'] }}"

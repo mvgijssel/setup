@@ -1,0 +1,7 @@
+.git
+image/*
+.DS_Store
+packer_cache
+unify
+libvirt/terraform-provider-libvirt
+dotfiles

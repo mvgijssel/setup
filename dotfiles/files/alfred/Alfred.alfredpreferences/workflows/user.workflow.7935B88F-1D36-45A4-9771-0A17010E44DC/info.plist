@@ -73,19 +73,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>2C6BCE49-68A1-4138-9F29-16D696EF33EE</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>24A69E22-84EA-465D-923D-6651EE5937C9</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>4E0403D7-EFAD-4F7E-9722-61215C585A56</key>
 		<array>
 			<dict>
@@ -135,19 +122,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>848BFFB6-C93A-49BA-A02C-834E1558E2A5</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>DAAD3D2A-785E-4501-8F79-3435D31DD895</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>8921EE9B-6050-4270-97CF-1FFD9A632F46</key>
 		<array>
 			<dict>
@@ -166,19 +140,6 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>8FE5E57F-535D-4B2A-8FAB-CE981551BE8D</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
-		<key>A0279E39-E4AD-4B58-8F27-1E29E49153D8</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>48F535D8-86B8-48B1-BF14-D85E843BC331</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -957,46 +918,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>duty</string>
-				<key>subtext</key>
-				<string>Open Duty Sheet</string>
-				<key>text</key>
-				<string>Open Duty Sheet</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>2C6BCE49-68A1-4138-9F29-16D696EF33EE</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>browser</key>
-				<string>com.choosyosx.choosy</string>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>https://docs.google.com/spreadsheets/d/13x0N3wB-dIysRT81dpyNIyxqXsg4sPt8Y7GyubHXHWA/edit</string>
-				<key>utf8</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>24A69E22-84EA-465D-923D-6651EE5937C9</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>browser</key>
 				<string>com.choosyosx.Choosy</string>
 				<key>spaces</key>
@@ -1151,86 +1072,6 @@
 			<string>alfred.workflow.action.openurl</string>
 			<key>uid</key>
 			<string>78D3B26E-A1BF-412B-B830-E16386D702B1</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>browser</key>
-				<string>com.choosyosx.Choosy</string>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>http://localhost:6001/admin</string>
-				<key>utf8</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>DAAD3D2A-785E-4501-8F79-3435D31DD895</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>payments</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Open Payments</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>848BFFB6-C93A-49BA-A02C-834E1558E2A5</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>browser</key>
-				<string>com.choosyosx.choosy</string>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>https://docs.google.com/spreadsheets/d/1oLt7lUuCOB2FIAFXVp6C5blYi2wbV7DhHXJtIzTWTV4/edit?usp=sharing</string>
-				<key>utf8</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>48F535D8-86B8-48B1-BF14-D85E843BC331</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>iguanaduty</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Open Iguana Duty</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>A0279E39-E4AD-4B58-8F27-1E29E49153D8</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1398,13 +1239,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<key>ypos</key>
 			<integer>180</integer>
 		</dict>
-		<key>24A69E22-84EA-465D-923D-6651EE5937C9</key>
-		<dict>
-			<key>xpos</key>
-			<integer>640</integer>
-			<key>ypos</key>
-			<integer>1010</integer>
-		</dict>
 		<key>27AF521F-7356-42B9-B271-EF894A1CC4B6</key>
 		<dict>
 			<key>xpos</key>
@@ -1421,13 +1255,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<key>ypos</key>
 			<integer>310</integer>
 		</dict>
-		<key>2C6BCE49-68A1-4138-9F29-16D696EF33EE</key>
-		<dict>
-			<key>xpos</key>
-			<integer>430</integer>
-			<key>ypos</key>
-			<integer>1010</integer>
-		</dict>
 		<key>2CB578C7-AEEE-43DC-A5D8-B6EE504706F5</key>
 		<dict>
 			<key>xpos</key>
@@ -1441,13 +1268,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<integer>640</integer>
 			<key>ypos</key>
 			<integer>590</integer>
-		</dict>
-		<key>48F535D8-86B8-48B1-BF14-D85E843BC331</key>
-		<dict>
-			<key>xpos</key>
-			<integer>640</integer>
-			<key>ypos</key>
-			<integer>1420</integer>
 		</dict>
 		<key>4E0403D7-EFAD-4F7E-9722-61215C585A56</key>
 		<dict>
@@ -1493,13 +1313,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<key>ypos</key>
 			<integer>1290</integer>
 		</dict>
-		<key>848BFFB6-C93A-49BA-A02C-834E1558E2A5</key>
-		<dict>
-			<key>xpos</key>
-			<integer>40</integer>
-			<key>ypos</key>
-			<integer>1410</integer>
-		</dict>
 		<key>8921EE9B-6050-4270-97CF-1FFD9A632F46</key>
 		<dict>
 			<key>colorindex</key>
@@ -1529,13 +1342,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<integer>40</integer>
 			<key>ypos</key>
 			<integer>1280</integer>
-		</dict>
-		<key>A0279E39-E4AD-4B58-8F27-1E29E49153D8</key>
-		<dict>
-			<key>xpos</key>
-			<integer>430</integer>
-			<key>ypos</key>
-			<integer>1420</integer>
 		</dict>
 		<key>A5871C9D-D563-4A51-887E-6C9EE63DCF5A</key>
 		<dict>
@@ -1642,13 +1448,6 @@ Type your keyword into Alfred, followed by your input text if needed, and you'll
 			<integer>250</integer>
 			<key>ypos</key>
 			<integer>1540</integer>
-		</dict>
-		<key>DAAD3D2A-785E-4501-8F79-3435D31DD895</key>
-		<dict>
-			<key>xpos</key>
-			<integer>250</integer>
-			<key>ypos</key>
-			<integer>1410</integer>
 		</dict>
 		<key>DE55322A-210E-47D2-9851-7B022D7F1669</key>
 		<dict>

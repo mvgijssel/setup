@@ -1,0 +1,63 @@
+# frozen_string_literal: true
+
+# https://www.thomas-krenn.com/en/wiki/Network_Configuration_in_VirtualBox
+
+require 'open3'
+
+TMP_DIR = ENV.fetch('SETUP_TMP_DIR')
+log_dir = ENV.fetch('SETUP_LOG_DIR')
+box_dir = ENV.fetch('SETUP_BOX_DIR')
+digital_rebar_dir = ENV.fetch('SETUP_DIGITAL_REBAR_DIR')
+local_network_bridge_interface = ENV.fetch('LOCAL_NETWORK_BRIDGE_INTERFACE')
+local_network_domain = ENV.fetch('LOCAL_NETWORK_DOMAIN')
+private_key_path = ENV.fetch('PRIVATE_KEY_PATH')
+
+Vagrant.configure('2') do |config|
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  config.vm.define "pxe" do |pxe|
+    # Hardcoding the mac address of the adapter and sending it to the razor client
+    # makes sure the node is registered correctly and immediately starts provisioning
+    bridge_mac = '08:00:27:cf:12:59'
+
+    vbox_bridge_mac = bridge_mac.split(':').join
+    digital_rebar_mac = bridge_mac.split(':').join('-')
+
+    # digital rebar uses the mac address doing the dhcp request as the hostname prefixed with a "d"
+    pxe_fqdn = "d#{digital_rebar_mac}.#{local_network_domain}"
+
+    # TODO: this up script is not necessary, as for unknown reason passing a different hostname is not picked up by the pxe image
+    pxe.trigger.before :up do |t|
+      t.info = "Register pxe machine in digital rebar"
+      t.run = { inline: "#{digital_rebar_dir}/register_machine.sh #{pxe_fqdn} #{bridge_mac}" }
+    end
+
+    pxe.vm.network "public_network", adapter: 1, auto_config: false, bridge: local_network_bridge_interface, mac: vbox_bridge_mac
+
+    pxe.vm.box = "file://#{File.join(box_dir, "pxe.box")}"
+
+    # NOTE: this will login to Sledgehammer, not the final deployed machine
+    pxe.ssh.host = pxe_fqdn
+    pxe.ssh.username = "root"
+    pxe.ssh.private_key_path = private_key_path
+
+    pxe.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+
+      # Enable promiscious mode on the network adapter to enable bridge networking in the vm
+      # Without this the kube_network bridge will not be able to get a dhcp lease for example
+      vb.customize ["modifyvm", :id, "--nicpromisc1", "allow-all"]
+
+      # We need a lot of memory here because this will run vms inside of it
+      vb.memory = "4096"
+
+      # Setup the serial port for logging
+      vb.customize ["modifyvm", :id, "--uartmode1", "file", File.join(log_dir, "pxe.log")]
+
+      vb.customize ["modifyvm", :id, "--boot1", "net"]
+      vb.customize ["modifyvm", :id, "--boot2", "disk"]
+      # TODO: remove floppy from virtualbox definition
+      vb.customize ["modifyvm", :id, "--boot3", "floppy"]
+    end
+  end
+end

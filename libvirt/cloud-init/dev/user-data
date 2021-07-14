@@ -1,0 +1,25 @@
+#cloud-config
+
+manage_etc_hosts: localhost
+
+users:
+  - name: vagrant
+    plain_text_passwd: vagrant
+    lock_passwd: false
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: libvirt
+    ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCrpNNwqoSqKEcPlz9u5/pH2Bn8oKcDqTrjR7232CQg6FuhkhI/IO2eqfxqbz7u9rMXEmcU/SJwz6us0YcZH+d4hS1s8LLVjhwZbu1rMBeki9dP2ljF0E7QztTwl/S6/NcIvyi/kMhQL4O0uKCC4Hgeay+70NgvOGbUxJyEKL7TFrSwTBbKHWv+HbXG/gp4ZbkGzouspeZuWoeoMoURi3OH6GQO9pyOIylHix9dHtSMQjcrDf0rdz4cIaZhf473u+F3b0ZDrV8oxsy18IdiEJp6PfxodRtAilIFKRG3nhQ1nwuF4GArH3tJdrG05jXOfZhOMmWqSKyJOhU1kWuzI/dD7dXPZEzg8YEHa27Vy15WbktjRhIkjbAU2HwZ213L4jn9ZNEO1s9HylumBrRbP/Savngh7SvuOSgqu4TRJa10cAMdqPErnZrTeQjW2MR3CuHV/lxsbaeH/i8UKtEZoXIXEmZcOnn/1u4BkT0pg1Vsyt+PPuBSUNANL10YKR/OLnc= id_rsa.development
+
+runcmd:
+  # the user groups are not updated because the user already exists
+  # so force adding the group libvirt to the vagrant user
+  - [usermod, -a, -G, libvirt, vagrant]
+
+  # Restart networking only during first boot to fix the wrong hostname in dhcp server
+  - [systemctl, restart, networking]
+
+  # Create placeholder folders for data
+  - [mkdir, -p, /data/vms/storage, /data/vms/logs]
+  - [chmod, -R, 0777, /data]

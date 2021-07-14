@@ -1,0 +1,82 @@
+{
+  "variables": {
+    "source_path": "",
+    "output_directory": "",
+    "provisioners_dir": "",
+    "output": "",
+    "cloud_init_iso": "",
+    "vm_log_file": "",
+    "private_key_path": ""
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "format": "ovf",
+      "output_directory": "packer_output",
+      "source_path": "{{user `source_path`}}",
+      "ssh_username": "ubuntu",
+      "ssh_private_key_file": "{{user `private_key_path`}}",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "guest_additions_mode": "attach",
+      "guest_additions_interface": "IDE",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "2048"],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--uartmode1",
+          "file",
+          "{{user `vm_log_file`}}"
+        ],
+        [
+          "storageattach",
+          "{{.Name}}",
+          "--storagectl",
+          "IDE Controller",
+          "--port",
+          "0",
+          "--device",
+          "0",
+          "--type",
+          "dvddrive",
+          "--medium",
+          "{{user `cloud_init_iso`}}"
+        ]
+      ],
+      "vboxmanage_post": [
+        ["modifyvm", "{{.Name}}", "--uartmode1", "disconnected"],
+        [
+          "storageattach",
+          "{{.Name}}",
+          "--storagectl",
+          "IDE Controller",
+          "--port",
+          "0",
+          "--device",
+          "0",
+          "--medium",
+          "none"
+        ]
+      ],
+      "headless": true,
+      "disable_shutdown": false,
+      "shutdown_timeout": "5m"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "{{user `provisioners_dir`}}/install-virtualbox-guest-additions.sh"
+    },
+    {
+      "type": "shell",
+      "script": "{{user `provisioners_dir`}}/reset-cloud-init.sh"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "{{user `output`}}"
+    }
+  ]
+}

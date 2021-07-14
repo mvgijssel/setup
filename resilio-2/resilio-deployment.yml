@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resilio-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resilio-2
+  template:
+    metadata:
+      labels:
+        app: resilio-2
+    spec:
+      containers:
+      - name: resilio-2
+        image: resilio/sync
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1Gi
+          limits:
+            memory: 1Gi
+        ports:
+        - name: resilio-2-ui
+          containerPort: 8888
+          protocol: TCP
+        - name: resilio-2-sync
+          containerPort: 55555
+          protocol: TCP
+        volumeMounts:
+        - name: resilio-2-config
+          mountPath: /mnt/sync
+        - name: resilio-2-docs
+          mountPath: /mnt/mounted_folders/docs
+      volumes:
+      - name: resilio-2-config
+        nfs:
+          server: 172.16.0.1
+          path: /data/resilio-2
+      - name: resilio-2-docs
+        nfs:
+          server: 172.16.0.1
+          path: /data/docs

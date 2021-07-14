@@ -1,0 +1,10 @@
+#cloud-config
+
+manage_etc_hosts: localhost
+hostname: provisioner
+
+# users:
+#   - name: ubuntu
+#     lock_passwd: false
+#     shell: /bin/bash
+#     sudo: ALL=(ALL) NOPASSWD:ALL

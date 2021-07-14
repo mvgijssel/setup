@@ -1,0 +1,115 @@
+---
+- name: 'Seed digital rebar'
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Read env
+      set_fact:
+        provisioner_fqdn: "{{ lookup('env', 'PROVISIONER_FQDN') | not_falsy }}"
+        scripts_dir: "{{ lookup('env', 'SETUP_SCRIPTS_DIR') | not_falsy }}"
+        public_key_path: "{{ lookup('env', 'PUBLIC_KEY_PATH') | not_falsy }}"
+
+    - name: Install drpcli on provisioner
+      tags: ['drpcli']
+      become: yes
+      get_url:
+        url: "http://{{ provisioner_fqdn }}:8091/files/drpcli.amd64.linux"
+        dest: "/usr/local/bin/drpcli"
+        mode: '+x'
+
+    - name: Download macos drpcli
+      tags: ['drpcli']
+      get_url:
+        url: "http://{{ provisioner_fqdn }}:8091/files/drpcli.amd64.darwin"
+        dest: "/tmp/drpcli.darwin"
+
+    - name: Copy drpcli to local machine
+      tags: ['drpcli']
+      fetch:
+        flat: true
+        src: /tmp/drpcli.darwin
+        dest: "{{ scripts_dir }}/drpcli"
+
+    - name: Install required community content
+      command: drpcli catalog item install drp-community-content
+
+    - name: Upload sledgehammer iso
+      command: drpcli bootenvs uploadiso sledgehammer
+
+    # TODO: default workflow should be ignore, only if the machine is known we should handle it
+    - name: Set default workflow
+      command: drpcli prefs set defaultWorkflow discover-new unknownBootEnv discovery
+
+    - name: Upload default content
+      command: drpcli contents upload catalog:task-library-stable
+
+    - name: Ensure logs are forwarded to console port
+      command: drpcli profiles set global param kernel-console to "console=tty0 console=ttyS0,115200"
+
+    - name: Set default public key
+      command: drpcli profiles set global param access-keys to "$PUBLIC_KEY_JSON"
+
+    - name: Install image deploy content pack
+      command: drpcli catalog item install image-deploy
+
+    # TODO: replace with vault
+    - name: Get public key content
+      delegate_to: localhost
+      set_fact:
+        public_key: "{{ lookup('file', public_key_path) }}"
+
+    - name: Generate access keys param json
+      set_fact:
+        access_keys: "{{ lookup('template', './access_keys.json.j2') }}"
+
+    - name: Set public key in digital rebar
+      shell: "drpcli profiles set global param access-keys to \"{{ access_keys }}\""
+
+    - name: Bundle our custom content pack
+      delegate_to: localhost
+      command: drpcli contents bundle base.yml
+      args:
+        chdir: "./base"
+
+    - name: Upload our custom content pack
+      delegate_to: localhost
+      command: drpcli contents upload base.yml
+      args:
+        chdir: "./base"
+
+    - set_fact:
+        network_data: "{{ ansible_default_ipv4 }}"
+
+    - set_fact:
+        network_interface: "{{ network_data.interface }}"
+        network_netmask: "{{ network_data.netmask }}"
+        network_router: "{{ network_data.gateway }}"
+        network_dns: "{{ network_data.gateway }}"
+        network_dns_search: "{{ ansible_dns.search[0] }}"
+        network_broadcast: "{{ network_data.broadcast }}"
+        network_cidr: "{{ network_data.network }}/{{ network_data.netmask }}"
+
+    - name: Generate actual cidr
+      set_fact:
+        network_cidr: "{{ network_cidr | ansible.netcommon.ipaddr('net') }}"
+
+    - name: Generate dhcp range
+      set_fact:
+        network_dhcp_start: "{{ network_cidr | ansible.netcommon.ipaddr('first_usable') }}"
+        network_dhcp_end: "{{ network_cidr | ansible.netcommon.ipaddr('last_usable') }}"
+
+    - name: Generate subnet config
+      set_fact:
+        subnet_config: "{{ lookup('template', './subnet.json.j2') }}"
+
+    - name: Get existing subnet
+      command: drpcli subnets list
+      register: existing_subnets
+
+    - name: Delete existing subnet
+      command: "drpcli subnets destroy {{ network_interface }}"
+      when: existing_subnets.stdout | from_json | selectattr('Name', 'equalto', network_interface) | length > 0
+
+    - name: Create subnet
+      shell: "drpcli subnets create \"{{ subnet_config }}\""

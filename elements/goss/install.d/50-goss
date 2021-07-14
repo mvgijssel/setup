@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# https://github.com/aelsabbahy/goss#manual-installation
+
+echo "INSTALLING GOSS v 0.3.9"
+
+curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.9/goss-linux-amd64 -o /usr/local/bin/goss
+chmod +rx /usr/local/bin/goss

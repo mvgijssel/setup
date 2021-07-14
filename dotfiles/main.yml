@@ -18,6 +18,15 @@
       debug:
         msg: "Running as user: {{ current_user }}"
 
+    - name: Ensure proper permissions for brew services
+      tags: ['homebrew', 'test']
+      become: yes
+      ansible.builtin.file:
+        path: "{{ lookup('env','HOME') }}/Library/LaunchAgents"
+        owner: maarten
+        group: staff
+        mode: '0755'
+
     # Update brew before to fix this issue https://github.com/Homebrew/homebrew-bundle/issues/751
     - name: Update Homebrew
       tags: ['homebrew']
@@ -186,7 +195,7 @@
       loop: "{{ languages | dict2items | map(attribute='key') | list }}"
 
     - name: Remove existing yarn symlinks
-      tags: ['lang']
+      tags: ['lang', 'node']
       file:
        path: "{{ item }}"
        state: absent
@@ -195,7 +204,7 @@
         - /usr/local/bin/yarnpkg
 
     - name: Install Nodejs packages for all versions
-      tags: ['lang']
+      tags: ['lang', 'node']
       environment:
         ASDF_NODEJS_VERSION: '{{ item[1] }}'
       npm:
@@ -208,7 +217,7 @@
         - "{{ languages.nodejs.versions | map(attribute='version') | list }}"
 
     - name: Install Nodejs packages specific for version
-      tags: ['lang']
+      tags: ['lang', 'node']
       environment:
         ASDF_NODEJS_VERSION: '{{ item[0].version }}'
       npm:
@@ -221,7 +230,7 @@
         - packages
 
     - name: Install Ruby gems for all versions
-      tags: ['lang']
+      tags: ['lang', 'ruby']
       environment:
         ASDF_RUBY_VERSION: '{{ item[1] }}'
       gem:
@@ -235,7 +244,7 @@
         - "{{ languages.ruby.versions | map(attribute='version') | list }}"
 
     - name: Install Ruby gems specific for version
-      tags: ['lang']
+      tags: ['lang', 'ruby']
       environment:
         ASDF_RUBY_VERSION: '{{ item[0].version }}'
       gem:
@@ -249,7 +258,7 @@
         - gems
 
     - name: Install solargraph documentation
-      tags: ['lang']
+      tags: ['lang', 'ruby']
       environment:
         ASDF_RUBY_VERSION: '{{ item.version }}'
       command: solargraph download-core {{ item.solargraph }}
@@ -257,7 +266,7 @@
       loop: "{{ languages.ruby.versions }}"
 
     - name: Generate YARD documentation for all Ruby versions
-      tags: ['lang']
+      tags: ['lang', 'ruby']
       environment:
         ASDF_RUBY_VERSION: '{{ item }}'
       command: yard gems

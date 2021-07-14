@@ -22,6 +22,8 @@ brew 'jinja2-cli' # cli tool for parsing jinja templates
 brew 'kubernetes-cli' # kubectl for interaction with kubernetes clusters
 brew 'kustomize' # for building/handling/changing kubernetes manifests
 
+brew 'buildifier'
+
 brew 'ansible'
 
 brew 'exiftool' # show/mutate EXIF information of documents
@@ -35,6 +37,8 @@ brew 'git-crypt'
 
 brew 'mas' # cli tool to install Apple App Store apps
 brew 'redis'
+
+brew 'qcachegrind' # for reading calltree/valgrind outputted profiles
 
 brew 'mr' # myrepos tool to manage large number of repositories at the same time
 
@@ -116,6 +120,11 @@ cask 'multipass'
 cask 'amethyst'
 cask 'ngrok'
 cask 'figma' ## tool for sharing designs and workflows
+cask 'notion'
+
+cask 'folx' # for downloading torrents
+cask 'vlc'
+cask 'flixtools' # for downloading subtitles
 
 # First install of virtualbox will always fail because system extensions need to be approved
 cask 'virtualbox'

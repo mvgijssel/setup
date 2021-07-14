@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# NOTE: debian stretch needs the buster cloud-init package, otherwise setting password does not work:
+# https://forum.proxmox.com/threads/install-latest-cloudinit-version-on-debian-stretch.46302/#post-246644
+
+echo "DOWNLOADING LATEST DEBIAN BUSTER CLOUD-INIT"
+
+# url copied from
+# https://packages.debian.org/buster/all/cloud-init/download
+URL=http://ftp.us.debian.org/debian/pool/main/c/cloud-init/cloud-init_20.2-2~deb10u1_all.deb
+
+TEMP_FILE=/tmp/cloud-init-buster.deb
+
+curl -o $TEMP_FILE $URL
+
+dpkg -i $TEMP_FILE

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Using a separate file instead of bash alias as this is not supported by direnv
+# https://github.com/direnv/direnv/issues/73
+
+set -Eeou pipefail
+
+# The env is lost when ssh is invoked through Terraform and libvirt
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# shellcheck source=../.envrc
+source "$CURRENT_DIR/../.envrc"
+
+# https://unix.stackexchange.com/questions/108873/removing-a-directory-from-path/291611#291611
+function path_remove {
+    # Delete path by parts so we can never accidentally remove sub paths
+    PATH=${PATH//":$1:"/":"} # delete any instances in the middle
+    PATH=${PATH/#"$1:"/} # delete any instance at the beginning
+    PATH=${PATH/%":$1"/} # delete any instance in the at the end
+}
+
+# Remove the scripts path which houses this SSH script, to prevent infinite loop
+# when calling the ssh binary
+path_remove "$SETUP_SCRIPTS_DIR"
+
+ARGS=("$@")
+
+if [[ -f "$LOCAL_NETWORK_SSH_CONFIG_PATH" ]]; then
+    ssh -F "$LOCAL_NETWORK_SSH_CONFIG_PATH" "${ARGS[@]}"
+else
+    ssh "${ARGS[@]}"
+fi

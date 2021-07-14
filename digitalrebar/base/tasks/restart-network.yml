@@ -1,0 +1,14 @@
+Name: restart-network
+Description: Restart networking on machine
+Templates:
+  - Name: Restart networking
+    Path: ''
+    Link: ''
+    Contents: |
+      #!/bin/bash
+      set -Eeoux pipefail
+      systemctl restart systemd-networkd.service
+    Meta: {}
+RequiredParams: []
+OptionalParams: []
+Prerequisites: []

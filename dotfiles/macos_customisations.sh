@@ -54,6 +54,11 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 # Enable "Automatically rearrange Spaces based on most recent use" in Mission Control
 defaults write com.apple.dock mru-spaces -bool false
 
+# From https://discussions.apple.com/thread/4995042
+# Disable switching spaces when active window is on another desktop
+# TODO: this setting does not work. Now manually have to disable "When switching to an application, switch to a space with open windows for that application"
+# defaults read com.apple.dock workspaces-auto-swoosh
+
 # Set the time format to 24 instead of AM/PM
 defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM HH:mm"
 
@@ -61,3 +66,9 @@ defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM HH:mm"
 killall Dock
 killall Finder
 killall SystemUIServer # for the clock
+
+# For VSCode mode mode
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false         # For VS Code
+defaults write com.microsoft.VSCodeInsiders ApplePressAndHoldEnabled -bool false # For VS Code Insider
+defaults write com.visualstudio.code.oss ApplePressAndHoldEnabled -bool false    # For VS Codium
+# defaults delete -g ApplePressAndHoldEnabled                                      # If necessary, reset global default

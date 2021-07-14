@@ -1,5 +1,4 @@
 .DS_Store
-.tool-versions
 .tern-port
 
 # .log folder is created bytaged files match any configured task.

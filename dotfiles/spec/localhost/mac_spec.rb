@@ -17,6 +17,15 @@ describe package('git') do
   it { should be_installed }
 end
 
+describe 'vagrant' do
+  describe command("vagrant --version") do
+    # See https://github.com/hashicorp/vagrant/issues/12344
+    it 'does not install vagrant 2.2.16 because ssh is broken in that version' do
+      expect(subject.stdout).to match(/Vagrant 2\.2\.15/)
+    end
+  end
+end
+
 describe host('google.com') do
   it 'can resolve dns from the internet' do
     should be_resolvable

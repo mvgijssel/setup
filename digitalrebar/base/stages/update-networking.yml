@@ -1,0 +1,6 @@
+Name: update-networking
+Description: Stage used to update Sledgehammer networking
+BootEnv: sledgehammer
+Tasks:
+  - enable-dhcp-all-interfaces
+  - restart-network

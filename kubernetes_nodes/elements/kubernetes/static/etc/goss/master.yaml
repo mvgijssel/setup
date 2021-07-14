@@ -1,0 +1,18 @@
+gossfile:
+  preflight.yaml: {}
+service:
+  kubelet:
+    enabled: true
+    running: true
+command:
+  check_kubernetes_internet_connectivity:
+    title: Test if DNS resolution inside kubernetes is working
+    exec: kubectl run goss-test-internet --restart=Never --rm -i --image busybox:latest -- nslookup -type=a dns.msftncsi.com
+    exit-status: 0
+    stdout:
+    - 'Server:		10.96.0.10'
+    - 'Address:	10.96.0.10:53'
+    - 'Name:	dns.msftncsi.com'
+    - 'Address: 131.107.255.255'
+    stderr: []
+    timeout: 30000 # ms, 30s. kubectl run needs to download the Docker image etc

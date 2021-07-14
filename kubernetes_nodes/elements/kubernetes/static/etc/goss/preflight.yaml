@@ -1,0 +1,97 @@
+file:
+  /proc/sys/net/bridge/bridge-nf-call-iptables:
+    title: Pass bridged IPv4 traffic to iptables’ chains
+    meta:
+      desc: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network
+    exists: true
+    mode: "0644"
+    size: 0
+    owner: root
+    group: root
+    filetype: file
+    contains:
+    - "1"
+package:
+  kubeadm:
+    installed: true
+    versions:
+      contain-element:
+        # Ensure 1.17.*
+        match-regexp: "1\\.17\\.\\d+-00"
+  kubectl:
+    installed: true
+    versions:
+      contain-element:
+        # Ensure 1.17.*
+        match-regexp: "1\\.17\\.\\d+-00"
+  kubelet:
+    installed: true
+    versions:
+      contain-element:
+        # Ensure 1.17.*
+        match-regexp: "1\\.17\\.\\d+-00"
+  nfs-common:
+    installed: true
+    versions:
+    - 1:1.3.4-2.5
+service:
+  docker:
+    enabled: true
+    running: true
+user:
+  debian:
+    exists: true
+    uid: 1000
+    gid: 1000
+    groups:
+    - debian
+    - docker
+    home: /home/debian
+    shell: /bin/bash
+group:
+  docker:
+    exists: true
+    gid: 999
+matching:
+  check_disk_usage:
+    title: Check if the root disk "/" has a total capacity >= 25 GiB
+    content: {{ (index .Vars.mountpoints "/").size_bytes }}
+    matches:
+      ge: 26843545600
+command:
+  docker.cgroup:
+    title: Make sure docker uses systemd as cgroup driver
+    meta:
+      desc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/#cgroup-drivers
+    exec: docker info --format '{{"{{json .CgroupDriver}}"}}'
+    exit-status: 0
+    stdout:
+    - '"systemd"'
+    stderr: []
+    timeout: 10000
+dns:
+  dns.msftncsi.com:
+    title: Test if DNS resolution is working
+    meta:
+      desc: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/ee126135(v=ws.10)?redirectedfrom=MSDN#how-ncsi-communicates-with-an-internet-site
+    resolvable: true
+    addrs:
+    - 131.107.255.255
+    - fd3e:4f5a:5b81::1
+    timeout: 500
+  localhost:
+    resolvable: true
+    addrs:
+    - 127.0.0.1
+    timeout: 500
+mount:
+  /:
+    title: Make sure there is enough disk space available
+    exists: true
+    opts:
+    - rw
+    - relatime
+    source: {{ (index .Vars.mountpoints "/").device }}
+    filesystem: ext4
+    usage:
+      lt: 90

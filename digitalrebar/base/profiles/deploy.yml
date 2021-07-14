@@ -1,0 +1,8 @@
+Name: deploy
+Params:
+  curtin/debug: true
+  curtin/network/template: network_config.yml.tmpl
+  image-deploy/image-os: linux
+  image-deploy/image-os-subtype: ubuntu
+  image-deploy/image-type: tgz
+  kernel-console: 'console=tty0 console=ttyS0,115200'

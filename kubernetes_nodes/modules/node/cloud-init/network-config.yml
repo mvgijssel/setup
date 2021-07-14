@@ -1,0 +1,6 @@
+version: 2
+ethernets:
+  # LAN Network
+  # 192.168.3.0/24
+  ens3:
+    dhcp4: true

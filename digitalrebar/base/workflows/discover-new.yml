@@ -1,0 +1,6 @@
+Name: discover-new
+Description: Updated discover workflow
+Stages:
+  - discover
+  - update-networking
+  - sledgehammer-wait

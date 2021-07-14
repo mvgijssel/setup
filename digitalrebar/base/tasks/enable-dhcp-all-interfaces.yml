@@ -1,0 +1,16 @@
+Name: enable-dhcp-all-interfaces
+Description: Enable DHCP for additional interfaces
+Templates:
+  - Name: systemd-network config
+    Path: /etc/systemd/network/25-other.network
+    Link: ''
+    Contents: |
+      [Match]
+      Name=enp0s3
+
+      [Network]
+      DHCP=ipv4
+    Meta: {}
+RequiredParams: []
+OptionalParams: []
+Prerequisites: []

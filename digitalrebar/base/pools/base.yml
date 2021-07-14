@@ -1,0 +1,11 @@
+Id: base
+EnterActions:
+  AddProfiles:
+    - deploy
+ExitActions:
+  RemoveProfiles:
+    - deploy
+AllocateActions:
+  Workflow: image-deploy-base
+ReleaseActions:
+  Workflow: discover-new

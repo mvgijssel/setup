@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# NOTE: 50-cloud-init.cfg is not sourced, renaming it to 50-cloud-init
+# or using a different source command in /etc/network/interfaces works
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=867921
+#
+# Implementation is copied from here:
+# diskimage_builder/elements/debootstrap/install.d/10-debian-networking:34
+
+echo "APPLYING DEBIAN NETWORKING FIX"
+
+mkdir -p /etc/network/interfaces.d
+if ! grep -E -q '^source(|-directory) /etc/network/interfaces.d/\*' /etc/network/interfaces; then
+    echo "source /etc/network/interfaces.d/*" >> /etc/network/interfaces
+    echo 'Network configuration set to source /etc/network/interfaces.d/*'
+fi

@@ -1,0 +1,2 @@
+master-test: hyperkit_run.sh master-test 1 "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.vmlinuz "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.initrd "" "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.qcow2
+worker-test: hyperkit_run.sh worker-test 2 "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.vmlinuz "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.initrd "" "${SETUP_KUBERNETES_DIR}"/images/kubernetes/kubernetes_buster.qcow2

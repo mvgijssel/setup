@@ -1,0 +1,78 @@
+# frozen_string_literal: true
+
+# TODO: provided by Bazel
+box_dir = ENV.fetch('SETUP_BOX_DIR')
+log_dir = ENV.fetch('SETUP_LOG_DIR')
+provisioner_box_path = File.join(box_dir, 'provisioner.box')
+pxe_box_path = File.join(box_dir, 'pxe.box')
+provisioner_dir = ENV.fetch('SETUP_PROVISIONER_DIR')
+
+# TODO: provided by Vault
+private_key_path = ENV.fetch('PRIVATE_KEY_PATH')
+
+Vagrant.configure('2') do |config|
+  config.vm.define "provisioner", primary: true do |provisioner|
+    provisioner.vm.network "private_network", type: "dhcp", auto_config: false
+
+    provisioner.vm.box = "file://#{provisioner_box_path}"
+    provisioner.vm.synced_folder '.', '/vagrant', disabled: true
+    provisioner.vm.network "forwarded_port", guest: 8091, host: 8091
+    provisioner.vm.network "forwarded_port", guest: 8092, host: 8092
+
+    provisioner.ssh.username = 'ubuntu'
+    provisioner.ssh.private_key_path = private_key_path
+    # provisioner.ssh.host = provisioner_fqdn
+
+    provisioner.vm.cloud_init :user_data, content_type: "text/cloud-config", path: File.join(provisioner_dir, "cloud-init/dev/user-data")
+
+    provisioner.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.memory = "4096"
+      vb.cpus = 2
+
+      # Enable promiscious mode on the network adapter to enable bridge networking in the vm
+      vb.customize ["modifyvm", :id, "--nicpromisc1", "allow-all"]
+      vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+
+      # Setup log file
+      vb.customize ["modifyvm", :id, "--uartmode1", "file", File.join(log_dir, "provisioner.log")]
+    end
+  end
+
+  config.vm.define "pxe" do |pxe|
+    # pxe.vm.network "public_network", adapter: 1, auto_config: false, bridge: local_network_bridge_interface
+    # pxe.vm.network "private_network", type: "dhcp", virtualbox__intnet: "setup-provisioner-network"
+    pxe.vm.network "private_network", type: "dhcp", auto_config: false
+
+    pxe.vm.box = "file://#{pxe_box_path}"
+    pxe.vm.synced_folder '.', '/vagrant', disabled: true
+
+    # we're logging in to Sledgehammer from digitalrebar, not the final deployed machine
+    pxe.ssh.username = 'root'
+    pxe.ssh.private_key_path = private_key_path
+    # pxe.ssh.host = pxe_fqdn
+
+    pxe.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.memory = "4096"
+      vb.cpus = 2
+
+      # Enable promiscious mode on the network adapter to enable bridge networking in the vm
+      vb.customize ["modifyvm", :id, "--nicpromisc1", "allow-all"]
+      vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+      # vb.customize ['modifyvm', :id, '--nic1', 'natnetwork', '--nat-network1', 'MyNatNetwork']
+
+      # Setup log file
+      vb.customize ["modifyvm", :id, "--uartmode1", "file", File.join(log_dir, "pxe.log")]
+
+      # Make sure the network adapter is booted from first
+      vb.customize ["modifyvm", :id, "--boot1", "net"]
+      vb.customize ["modifyvm", :id, "--boot2", "disk"]
+      vb.customize ["modifyvm", :id, "--boot3", "floppy"]
+
+      # Make sure the private (second) network adapter is used for pxe booting by giving it priority 1
+      vb.customize ["modifyvm", :id, "--nicbootprio1", "4"]
+      vb.customize ["modifyvm", :id, "--nicbootprio2", "1"]
+    end
+  end
+end
